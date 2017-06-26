@@ -379,6 +379,7 @@ https://vk.com/id70034317
 https://vk.com/id14438724
 https://vk.com/id308379065
 https://vk.com/id44917496
+<<<<<<< HEAD
 https://vk.com/id217709787
 https://vk.com/id24678636
 https://vk.com/id16814948
@@ -469,3 +470,5 @@ https://vk.com/id3575653
 https://vk.com/id15708639
 https://vk.com/id25185945
 https://vk.com/id81618882
+=======
+>>>>>>> parent of 353edcc... мега бот начало
