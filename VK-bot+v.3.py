@@ -38,8 +38,10 @@ def parser(new_mass, new_mass_id, w):
             user_first_name = vk.users.get(user_ids = new_mass['items'][0]['user_id'])
             for n in kon_otc:
                 time.sleep(10)
-                response = vk.messages.send(user_id=n, message='Пользователь {} с номером № {}, пишет: {}'.format (user_first_name[0]['first_name'], 
-                                                                                                                   new_mass['items'][0]['user_id'], new_mass['items'][0]['body']))
+                response = vk.messages.send(user_id=n, message='https://vk.com/id{} пользователь {} с номером № {}, пишет: {}'.format (new_mass['items'][0]['user_id'],
+                                                                                                                                       user_first_name[0]['first_name'],
+                                                                                                                                       new_mass['items'][0]['user_id'],
+                                                                                                                                       new_mass['items'][0]['body']))
             vk.messages.markAsRead(message_ids = new_mass_id) # помечаем сообщение как прочитанное 
 
     except:
@@ -75,12 +77,6 @@ if __name__ == '__main__':
                     elif int(new_mass['items'][0]['out']) == 0:
                         parser(new_mass, new_mass_id, w)
 
-
-
-        
-
-
-# In[ ]:
 
 
 
