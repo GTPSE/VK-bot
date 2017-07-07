@@ -1,8 +1,6 @@
 
 # coding: utf-8
 
-# In[1]:
-
 import vk_api
 import random
 import time
@@ -16,8 +14,93 @@ login_={'me-bot1@yandex.ru':'6607062017bot','+79623240505':'6607062017bot'}
 bot_id = {'me-bot1@yandex.ru':432166514, 'me-bot2@yandex.ru':432445894}
 vk = []
 
-def send(vk):
+
+def read_():
+    f = open(r'C:\\2\\1\\stok.txt')
+    line = f.read()
+    return line.split()
+
+def message(imia):
+    first = ['{} здравствуйте, ', '{} добрый день, ', '{} день добрый, ', 'Приветствую {}, ']
+    second = ['меня зовут Светлана, я  мастер ногтевого сервиса и хотела бы предложить Вам свои услуги. ',
+              'меня зовут Светлана, я начинающий мастер ногтевого сервиса. В первую очередь я заинтересована в постоянных клиентах, поэтому за демократичную цену я предлагаю качественные услуги и не экономлю на материалах. ',
+              'меня зовут Светлана, я делаю маникюр на дому в районе Щорса - Московская. ']
+    third = ['Маникюр + покрытие всего 400 рублей👍, подробности в моей группе: https://vk.com/svetipermyakova',
+                 'Маникюр + покрытие всего 400 рублей👍, с прайсом, а также с моими работами вы можете ознакомиться в группе: https://vk.com/svetipermyakova']
+    message_ = first[random.randrange(len(first))].format(imia[0]['first_name']) + second[
+        random.randrange(len(second))] + third[random.randrange(len(third))]
+
+    return message_
+
+def send(vk, new_mass_id):
+    global stok
     print ('запускаем спам')
+    kon_otc = ['7257819', '47775818']
+    for n in kon_otc:
+        time.sleep(random.randrange(10, 20))
+        vk.messages.send(user_id=n, message='Запущена рассылка спама')
+    stok = read_()
+    main(vk)
+    write_()
+    vk.messages.markAsRead(message_ids=new_mass_id)
+    print('Ok')
+
+
+
+
+def main(vk):
+    global stok
+    global otpr
+    global notpr
+    global otpr_otc
+    global notpr_otc
+    global message_
+    t = 0
+    while t < 15:
+        #        for t in range(15):
+        try:
+            time.sleep(random.randrange(20, 100))
+            id_ = stok.pop(
+                random.randrange(len(stok) - 1))  # случайным образом выбираем человека для отправки сообщения
+            imia = vk.users.get(user_id=id_, name_case='nom')
+            vk.messages.send(user_id=id_, message=message(imia))
+            otpr += ['https://vk.com/id' + str(id_) + '\n']
+            otpr_otc += 1
+            t += 1
+        except:
+            notpr += ['https://vk.com/id' + str(id_) + '\n']
+            notpr_otc += 1
+            print('сообщение не отправлено', id_)
+
+    # необходимо отправить отчет от имени робота
+    mess = 'Добрый день, меня зовут {}, сегодня я отправил {} рекламных сообщений, у {} пользователей личка закрыта :((. В спам базе осталось {} контактов'.format(
+        str(w), str(otpr_otc), str(notpr_otc), str(len(stok)))
+    kon_otc = ['7257819', '47775818', '13662095']
+    for n in kon_otc:
+        time.sleep(random.randrange(10, 20))
+        vk.messages.send(user_id=n, message=mess)
+    print('Сообщения оправлены')
+
+def write_():
+    global otpr
+    global notpr
+    with open(r'C:\\2\\1\\stok.txt', 'w') as f:
+        for i in stok:
+            f.write(
+                str(i) + '\n'
+            )
+    with open(r'C:\\2\\1\\otpr.txt', 'a') as f:
+        for o in otpr:
+            f.write(
+                str(o)
+            )
+    with open(r'C:\\2\\1\\notpr.txt', 'a') as f:
+        for p in notpr:
+            f.write(
+                    str(p)
+                    )
+
+
 
 def parser(new_mass, new_mass_id, w):
     print ('вызов парсера')
@@ -73,7 +156,7 @@ if __name__ == '__main__':
                 for i in range(len(new_Dialogs['items'])):
                     new_mass_id = new_Dialogs['items'][i]['message']['id']
                     new_mass = vk.messages.getById (message_ids = new_mass_id)
-                    if str(new_mass['items'][0]['body']) == 'start' : send(w)
+                    if str(new_mass['items'][0]['body']).lower() == 'старт' : send(vk, new_mass_id)
                     elif int(new_mass['items'][0]['out']) == 0:
                         parser(new_mass, new_mass_id, w)
 
