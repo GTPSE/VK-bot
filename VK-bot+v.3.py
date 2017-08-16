@@ -10,8 +10,8 @@ notpr_otc = 0 # счетчик не отправленных сообщений
 stok =[]
 otpr = []
 notpr = []
-login_={'me-bot1@yandex.ru':'34244GTPSE', '+79623240505':'226640411GPS'}
-bot_id = {'me-bot1@yandex.ru':432166514, 'me-bot2@yandex.ru':432445894}
+login_={'me-bot1@yandex.ru':'226640411QWE','+79623240505':'226640411GPS'}
+bot_id = {'me-bot1@yandex.ru':'34244GTPSE', 'me-bot2@yandex.ru':432445894}
 vk = []
 
 
@@ -82,7 +82,7 @@ def main(vk):
 
     # необходимо отправить отчет от имени робота
     mess = 'Добрый день, меня зовут {}, сегодня я отправил {} рекламных сообщений, у {} пользователей личка закрыта :((. В спам базе осталось {} контактов'.format(
-        str(w), str(otpr_otc), str(notpr_otc), str(len(stok)))
+        str(user), str(otpr_otc), str(notpr_otc), str(len(stok)))
     kon_otc = ['7257819', '47775818', '13662095']
     for n in kon_otc:
         time.sleep(random.randrange(10, 20))
@@ -110,7 +110,7 @@ def write_():
 
 
 
-def parser(new_mass, new_mass_id, w):
+def parser(new_mass, new_mass_id, user):
     print ('вызов парсера')
 
 # !!!мугут быть ошибки вызванные тем что пиршли сразу несколько сообщений от одного человека
@@ -144,29 +144,29 @@ def parser(new_mass, new_mass_id, w):
                 
 if __name__ == '__main__':
     print ('Поехали!!!')
+	# создаем сессию (подключение)
+
     while True:
-        time.sleep(60)                      
-        # создаем сессию (подключение)
-        for w in login_:
+        for user in login_:
             otpr_otc = 0
             notpr_otc = 0
-            vk_session = vk_api.VkApi(w, login_[w])
+            vk_session = vk_api.VkApi(user, login_[user])
             try:
                 vk_session.auth()
             except vk_api.AuthError as error_msg:
                 print(error_msg)
             vk = vk_session.get_api()
-
-            # проверяем есть ли новые сообщения у ботов
+            time.sleep(random.randrange(40, 60))
+        # проверяем есть ли новые сообщения у ботов
         #    ts_ = vk.messages.getLongPollServer(need_pts = 1)
-            new_Dialogs = vk.messages.getDialogs(unread = 1) # получаем чаты с новыми сообщениятми 
+            new_Dialogs = vk.messages.getDialogs(unread = 1) # получаем чаты с новыми сообщениятми
             if int(new_Dialogs['count'])>0:
                 for i in range(len(new_Dialogs['items'])):
                     new_mass_id = new_Dialogs['items'][i]['message']['id']
                     new_mass = vk.messages.getById (message_ids = new_mass_id)
                     if str(new_mass['items'][0]['body']).lower() == 'старт' : send(vk, new_mass_id)
                     elif int(new_mass['items'][0]['out']) == 0:
-                        parser(new_mass, new_mass_id, w)
+                        parser(new_mass, new_mass_id, user)
 
 
 
