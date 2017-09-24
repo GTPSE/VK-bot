@@ -8,8 +8,8 @@ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
 
-login_={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79623240505':'18082017GTPSE'}
-login_2={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79506482524':'226640411','+79623240505':'18082017GTPSE'}
+login_={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79623240505':'18082017GTPSE2'}
+login_2={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79506482524':'226640411','+79623240505':'18082017GTPSE2'}
 bot_ID = ['4421259060', '442123798', '432166514', '436034900']
 
 def read_stok():
@@ -118,35 +118,34 @@ def send(vk, new_mass_id, user):
 
 
 
-def parser(new_mass, new_mass_id, col, vk, user):
+def parser(new_mass, new_mass_id, vk, user, mass_user):
     print('вызов парсера')
 
     # !!!мугут быть ошибки вызванные тем что пиршли сразу несколько сообщений от одного человека
 
     try:
-        if str(new_mass['items'][col]['body']).lower()[0:6] == 'ответ ':
+        if str(new_mass.lower()[0:6]) == 'ответ ':
             print('перенаправляем сообщение')
-            otvet = str(new_mass['items'][col]['body']).split(
-                ';')  # парсим строку по точке запятой на две части, вторая с текстом
-            response = vk.messages.send(user_id=otvet[0].split()[1], message=otvet[1])
+            otvet = str(new_mass.split(';'))  # парсим строку по точке запятой на две части, вторая с текстом
+            vk.messages.send(user_id=otvet[0].split()[1], message=otvet[1])
+            time.sleep(random.randrange(1, 2))
 
-            time.sleep(random.randrange(10, 20))
 
-        elif str(new_mass['items'][col]['body']).lower() == 'старт':
+        elif str(new_mass).lower() == 'старт':
             send(vk, new_mass_id, user)
 
         else:
             print('рассылаем уведомление о входящем сообщении')
             kon_otc = ['7257819', '47775818', '113536512']
-            user_first_name = vk.users.get(user_ids=new_mass['items'][col]['user_id'])
+            user_first_name = vk.users.get(user_ids=mass_user)
             for n in kon_otc:
-                time.sleep(random.randrange(10, 20))
-                response = vk.messages.send(user_id=n,
+                time.sleep(random.randrange(1, 3))
+                vk.messages.send(user_id=n,
                                             message='https://vk.com/id{} пользователь {} с номером № {}, пишет: {}'.format(
-                                                new_mass['items'][col]['user_id'],
-                                                user_first_name[col]['first_name'],
-                                                new_mass['items'][col]['user_id'],
-                                                new_mass['items'][col]['body']))
+                                                mass_user,
+                                                user_first_name[0]['first_name'],
+                                                mass_user,
+                                                new_mass))
 
 
     except:
@@ -162,23 +161,38 @@ def parser(new_mass, new_mass_id, col, vk, user):
 
 def raed_messages(vk, user):
     # проверяем есть ли новые сообщения у бота
-    new_Dialogs = vk.messages.getDialogs(unread=1)  # получаем чаты с новыми сообщениятми
-    if int(new_Dialogs['count']) > 0: # если количество новых сообщений > 0 читаем это сообщение
-        for i in range(len(new_Dialogs['items'])):
-                new_mass_id = new_Dialogs['items'][i]['message']['id']
-                new_mass = vk.messages.getById(message_ids=new_mass_id)
-                print (new_mass)
-                print (new_mass_id)
-                for col in range(len(new_mass['items'])):
-                    parser(new_mass, new_mass_id, col, vk, user)
-        vk.messages.markAsRead(message_ids=new_mass_id)  # помечаем сообщение как прочитанное
+    new_Dialogs = vk.messages.get(count=100)  # получам последние 100 сообщений
+    print ('длина массива:', len(new_Dialogs['items']))
+    for t in reversed(new_Dialogs['items']):
+        if t['read_state'] == 0:
+            new_mass_id = t['id']
+            new_mass = t['body']
+            mass_user = t['user_id']
+            print (mass_user)
+            print(new_mass_id)
+            print(new_mass)
+#            new_mass_id = new_Dialogs['items'][i]['message']['id']
+#            new_mass = new_Dialogs['items'][i]['message']['body']
+#            mass_user = new_Dialogs['items'][i]['message']['user_id']
+            if bot_ID.count(str(mass_user)) != 0: # проверяем от кого сообщение
+                                                     # если от ота то не реагируем
+                vk.messages.markAsRead(message_ids=new_mass_id)  # помечаем сообщение как прочитанное
+            else:
+                parser(new_mass, new_mass_id, vk, user, mass_user)
+                vk.messages.markAsRead(message_ids=new_mass_id)  # помечаем сообщение как прочитанное
 
 
 # рассылаем флуд между ботами
 def flud(vk):
     global fluds
+    global bot_ID
+    bots_id = vk.users.get()
+    bot_ID_flud = []
+    for e in bot_ID:
+        if e != bots_id[0]['id']: bot_ID_flud.append(e)
     message_flud = str(fluds[random.randrange(len(fluds))])
-    messege_in_bot_ID = str(bot_ID[random.randrange(len(bot_ID))])
+    print (bot_ID_flud)
+    messege_in_bot_ID = str(bot_ID_flud[random.randrange(len(bot_ID_flud))])
     vk.messages.send(user_id=messege_in_bot_ID, message=message_flud)
 
 
@@ -192,8 +206,10 @@ def mane(user):
     password = login_[user]
     vk = vk_session(user, password)
     while True:
-        raed_messages(vk, user) # роверяем новые сообщения
- #       flud(vk) # рассылаем флуд между ботами
+       time.sleep(random.randrange(7, 10))
+       raed_messages(vk, user) # роверяем новые сообщения
+       time.sleep(random.randrange(7, 10))
+ #      flud(vk) # рассылаем флуд между ботами
 
 
 if __name__ == '__main__':

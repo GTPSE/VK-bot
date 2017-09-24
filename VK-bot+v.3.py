@@ -10,7 +10,7 @@ notpr_otc = 0 # счетчик не отправленных сообщений
 stok =[]
 otpr = []
 notpr = []
-login_={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79623240505':'18082017GTPSE'}
+login_={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411'}
 bot_id = {'me-bot1@yandex.ru':'34244GTPSE', 'me-bot2@yandex.ru':432445894}
 vk = []
 def read_():
