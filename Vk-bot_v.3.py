@@ -8,7 +8,7 @@ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
 
-login_={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79623240505':'18082017GTPSE2'}
+login_={'me-bot1@yandex.ru':'226640411QWE','+79623240505':'18082017GTPSE2'}
 login_2={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79506482524':'226640411','+79623240505':'18082017GTPSE2'}
 bot_ID = ['4421259060', '442123798', '432166514', '436034900']
 
@@ -46,10 +46,13 @@ def message(imia):
     third = ['Маникюр + покрытие всего 400 рублей👍, подробности в моей группе: https://vk.com/svetipermyakova',
              'Маникюр + покрытие всего 400 рублей👍, с прайсом, а также с моими работами вы можете ознакомиться в группе: https://vk.com/svetipermyakova',
              'С моими работами вы можете ознакомиться в группе: https://vk.com/svetipermyakova, маникюр + покрытие всего 400 рублей👍',
-             'Большинство своих работ я выкладываю в своей группе: https://vk.com/svetipermyakova, там же вы можете ознакомиться со стоимостью моих услуг. Маникюр + покрытие всего 400 рублей👍.']
+             'Большинство своих работ я выкладываю в своей группе: https://vk.com/svetipermyakova, там же вы можете ознакомиться со стоимостью моих услуг. Маникюр + покрытие всего 400 рублей👍.'
+             ]
+
+    fourth = [' Если вам не интересно мое предложение пожалуйста не отправляйте его в спам']
 
     message_ = first[random.randrange(len(first))].format(imia[0]['first_name']) + second[
-        random.randrange(len(second))] + third[random.randrange(len(third))]
+        random.randrange(len(second))] + third[random.randrange(len(third))] + fourth[0]
 
     return message_
 
@@ -111,7 +114,7 @@ def send(vk, new_mass_id, user):
     for n in kon_otc:
         time.sleep(random.randrange(10, 20))
         vk.messages.send(user_id=n, message='Запущена рассылка спама')
-    main(vk)
+    main(vk, user)
     write_()
     vk.messages.markAsRead(message_ids=new_mass_id)
     print('Ok')
@@ -148,7 +151,8 @@ def parser(new_mass, new_mass_id, vk, user, mass_user):
                                                 new_mass))
 
 
-    except:
+    except Exception as ex:
+        print ('Ошибка', ex)
         kon_otc = ['7257819', '47775818', '113536512']
         for n in kon_otc:
             time.sleep(10)
@@ -162,7 +166,6 @@ def parser(new_mass, new_mass_id, vk, user, mass_user):
 def raed_messages(vk, user):
     # проверяем есть ли новые сообщения у бота
     new_Dialogs = vk.messages.get(count=100)  # получам последние 100 сообщений
-    print ('длина массива:', len(new_Dialogs['items']))
     for t in reversed(new_Dialogs['items']):
         if t['read_state'] == 0:
             new_mass_id = t['id']
@@ -214,6 +217,8 @@ def mane(user):
 
 if __name__ == '__main__':
     print ('Поехали!!!')
+    notpr = []
+    notpr_otc = 0
     stok = read_stok() # читаем спам базу
     fluds = read_flud() # читаем войну и мир для для флуда между ботами
     pool = ThreadPool(len(login_)) # создаем пул из воркеров,  количество воркеров равно колличеству ботов
