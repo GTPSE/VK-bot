@@ -1,1 +1,1 @@
-python C:\2\1\VK-bot+v.3.py
+python D:\VK-bot\Vk-bot_v.3.py
