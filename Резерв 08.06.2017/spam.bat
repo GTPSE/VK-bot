@@ -1,1 +1,0 @@
-python C:\2\1\spam.py
