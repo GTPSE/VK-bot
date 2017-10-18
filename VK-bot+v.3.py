@@ -1,4 +1,4 @@
-
+﻿
 # coding: utf-8
 
 import vk_api
@@ -10,11 +10,11 @@ notpr_otc = 0 # счетчик не отправленных сообщений
 stok =[]
 otpr = []
 notpr = []
-login_={'me-bot1@yandex.ru':'226640411QWE', '+79623240505':'18082017GTPSE2'}
+login_={'+79126482524':'226640411@@', '+79506482524':'226640411@', '+79623240505':'18082017GTPSE7', 'me-bot1@yandex.ru':'226640411QW3'}
 bot_id = {'me-bot1@yandex.ru':'34244GTPSE', 'me-bot2@yandex.ru':432445894}
 vk = []
 def read_():
-    f = open(r'C:\\2\\1\\stok.txt')
+    f = open(r'D:\\VK-bot\\stok.txt')
     line = f.read()
     return line.split()
 
@@ -91,17 +91,17 @@ def main(vk):
 def write_():
     global otpr
     global notpr
-    with open(r'C:\\2\\1\\stok.txt', 'w') as f:
+    with open(r'D:\\VK-bot\\stok.txt', 'w') as f:
         for i in stok:
             f.write(
                 str(i) + '\n'
             )
-    with open(r'C:\\2\\1\\otpr.txt', 'a') as f:
+    with open(r'D:\\VK-bot\\otpr.txt', 'a') as f:
         for o in otpr:
             f.write(
                 str(o)
             )
-    with open(r'C:\\2\\1\\notpr.txt', 'a') as f:
+    with open(r'D:\\VK-bot\\notpr.txt', 'a') as f:
         for p in notpr:
             f.write(
                     str(p)

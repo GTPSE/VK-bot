@@ -1,4 +1,4 @@
-# coding: utf-8
+﻿# coding: utf-8
 
 import vk_api
 import random
@@ -8,21 +8,29 @@ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
 
-login_={'me-bot1@yandex.ru':'226640411QWE','+79623240505':'18082017GTPSE2'}
-login_2={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411', '+79506482524':'226640411','+79623240505':'18082017GTPSE2'}
-bot_ID = ['4421259060', '442123798', '432166514', '436034900']
+login_={'me-bot1@yandex.ru':'226640411QW3', '+79126482524':'226640411@', '+79506482524':'226640411@','+79623240505':'18082017GTPSE7'}
+login_2={'me-bot1@yandex.ru':'226640411QWE', '+79126482524':'226640411@', '+79506482524':'226640411@','+79623240505':'18082017GTPSE2'}
+bot_ID = ['442125906', '442123798', '432166514', '436034900']
 
 def read_stok():
-    puti = os.path.abspath('stok.txt')
-    with open(puti, 'r') as f:
+    with open(r'D:\\VK-bot\\stok.txt', 'r') as f:
         line = f.read()
     return  line.split()
 
 def read_flud():
-    puti = os.path.abspath('flud.txt')
-    with open(puti, 'r') as f:
+    with open(r'D:\\VK-bot\\flud.txt', 'r') as f:
         line = f.read()
     return  line.split('.')
+
+def error(ex):
+    print ('Возникла следующая ошибка:', ex)
+    try:
+        with open(r'D:\\VK-bot\\error.txt', 'a') as f:
+            f.write(str(ex) + '/n')
+    except:
+        with open(r'D:\\VK-bot\\error.txt', 'w') as f:
+            f.write(str(ex) + '/n')
+
 
 def vk_session(user, password):
     vk_session = vk_api.VkApi(user, password)
@@ -58,17 +66,17 @@ def message(imia):
 
 def write_():
     global notpr
-    with open(r'C:\\2\\1\\stok.txt', 'w') as f:
+    with open(r'D:\\VK-bot\\stok.txt', 'w') as f:
         for i in stok:
             f.write(
                 str(i) + '\n'
             )
-    with open(r'C:\\2\\1\\otpr.txt', 'a') as f:
+    with open(r'D:\\VK-bot\\otpr.txt', 'a') as f:
         for o in otpr:
             f.write(
                 str(o)
             )
-    with open(r'C:\\2\\1\\notpr.txt', 'a') as f:
+    with open(r'D:\\VK-bot\\notpr.txt', 'a') as f:
         for p in notpr:
             f.write(
                     str(p)
@@ -93,10 +101,17 @@ def main(vk, user):
             otpr += ['https://vk.com/id' + str(id_) + '\n']
             otpr_otc += 1
             t += 1
-        except:
+        except Exception as ex:
+            error(ex)
             notpr += ['https://vk.com/id' + str(id_) + '\n']
             notpr_otc += 1
             print('сообщение не отправлено', id_)
+            kon_otc = ['7257819', '47775818', '13662095'] 
+            mess_err= 'Возникла следующая ошибка =' + str(ex)
+            for n in kon_otc:
+                time.sleep(random.randrange(10, 20))
+                vk.messages.send(user_id=n, message=mess_err)
+
 
     # необходимо отправить отчет от имени робота
     mess = 'Добрый день, меня зовут {}, сегодня я отправил {} рекламных сообщений, у {} пользователей личка закрыта :((. В спам базе осталось {} контактов'.format(
@@ -129,13 +144,13 @@ def parser(new_mass, new_mass_id, vk, user, mass_user):
     try:
         if str(new_mass.lower()[0:6]) == 'ответ ':
             print('перенаправляем сообщение')
-            otvet = str(new_mass.split(';'))  # парсим строку по точке запятой на две части, вторая с текстом
+            otvet = new_mass.split(';')  # парсим строку по точке запятой на две части, вторая с текстом
             vk.messages.send(user_id=otvet[0].split()[1], message=otvet[1])
             time.sleep(random.randrange(1, 2))
 
 
         elif str(new_mass).lower() == 'старт':
-            send(vk, new_mass_id, user)
+                send(vk, new_mass_id, user)
 
         else:
             print('рассылаем уведомление о входящем сообщении')
@@ -152,11 +167,12 @@ def parser(new_mass, new_mass_id, vk, user, mass_user):
 
 
     except Exception as ex:
-        print ('Ошибка', ex)
+        error(ex)
         kon_otc = ['7257819', '47775818', '113536512']
+        ms_err = 'Возникла следующая ошибка: ' + str(ex)
         for n in kon_otc:
             time.sleep(10)
-            response = vk.messages.send(user_id=n, message='Команда введена не верно')
+            response = vk.messages.send(user_id=n, message=ms_err)
 
 
 
@@ -171,12 +187,6 @@ def raed_messages(vk, user):
             new_mass_id = t['id']
             new_mass = t['body']
             mass_user = t['user_id']
-            print (mass_user)
-            print(new_mass_id)
-            print(new_mass)
-#            new_mass_id = new_Dialogs['items'][i]['message']['id']
-#            new_mass = new_Dialogs['items'][i]['message']['body']
-#            mass_user = new_Dialogs['items'][i]['message']['user_id']
             if bot_ID.count(str(mass_user)) != 0: # проверяем от кого сообщение
                                                      # если от ота то не реагируем
                 vk.messages.markAsRead(message_ids=new_mass_id)  # помечаем сообщение как прочитанное
@@ -187,17 +197,20 @@ def raed_messages(vk, user):
 
 # рассылаем флуд между ботами
 def flud(vk):
-    global fluds
-    global bot_ID
-    bots_id = vk.users.get()
-    bot_ID_flud = []
-    for e in bot_ID:
-        if e != bots_id[0]['id']: bot_ID_flud.append(e)
-    message_flud = str(fluds[random.randrange(len(fluds))])
-    print (bot_ID_flud)
-    messege_in_bot_ID = str(bot_ID_flud[random.randrange(len(bot_ID_flud))])
-    vk.messages.send(user_id=messege_in_bot_ID, message=message_flud)
-
+    time.sleep(random.randrange(7, 10))
+    try:
+        global fluds
+        global bot_ID
+        bots_id = vk.users.get()
+        bot_ID_flud = []
+        for e in bot_ID:
+            if str(e) != str(bots_id[0]['id']): bot_ID_flud.append(e)
+        message_flud = str(fluds[random.randrange(len(fluds))])
+        messege_in_bot_ID = str(bot_ID_flud[random.randrange(len(bot_ID_flud))])
+        vk.messages.send(user_id=messege_in_bot_ID, message=message_flud)
+    except:
+        print ('messege_in_bot_ID =', messege_in_bot_ID)
+        print ('message_flud =', message_flud)
 
 
 
@@ -212,18 +225,20 @@ def mane(user):
        time.sleep(random.randrange(7, 10))
        raed_messages(vk, user) # роверяем новые сообщения
        time.sleep(random.randrange(7, 10))
- #      flud(vk) # рассылаем флуд между ботами
+       flud(vk) # рассылаем флуд между ботами
 
 
 if __name__ == '__main__':
     print ('Поехали!!!')
+    otpr = []
     notpr = []
     notpr_otc = 0
+    otpr_otc = 0
     stok = read_stok() # читаем спам базу
     fluds = read_flud() # читаем войну и мир для для флуда между ботами
     pool = ThreadPool(len(login_)) # создаем пул из воркеров,  количество воркеров равно колличеству ботов
     pool.map(mane, login_)
-
+# просто так
 
 
 
